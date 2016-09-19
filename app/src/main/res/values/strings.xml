@@ -44,6 +44,7 @@
 
     <string name="user_repassword">重输密码：</string>
 
+    <string name="viewpager_indicator">%1$d/%2$d</string>
 
 
 </resources>

@@ -2,6 +2,7 @@ package com.arlen.photo;
 
 import android.app.Fragment;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.arlen.photo.SpinnerAdapter.spinner_gongwei_oracle;
+import com.example.god.myapplication.MainActivity_uploadpic;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,10 +59,21 @@ public class MyFragment2 extends Fragment {
     private int mImageThumbSize;
     private int mImageThumbSpacing;
 
+    private Button btn_uploadpic_info;
+
     public void onActivityCreated(Bundle savedInstanceState) {
 
         super.onActivityCreated(savedInstanceState);
 
+        btn_uploadpic_info=(Button)getActivity().findViewById(R.id.btn_uploadpic_info);
+
+        btn_uploadpic_info.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(),MainActivity_uploadpic.class);
+                getActivity().startActivity(intent);
+            }
+        });
         mImageThumbSize = getResources().getDimensionPixelSize(
                 R.dimen.image_thumbnail_size);
         mImageThumbSpacing = getResources().getDimensionPixelSize(
