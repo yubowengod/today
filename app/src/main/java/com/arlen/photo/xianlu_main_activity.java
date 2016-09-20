@@ -26,6 +26,8 @@ import com.arlen.photo.ImageCachceUitl_package.ImageCachceUitl;
 import com.arlen.photo.upload.Data_up;
 import com.arlen.photo.xianlu.xianlu_oracle;
 import com.bumptech.glide.Glide;
+import com.example.imagedemo.ItemEntity;
+import com.example.imagedemo.ListItemAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,34 +39,7 @@ import java.util.concurrent.Executors;
  */
 public class xianlu_main_activity extends Activity {
 
-
-    ////////////////////////////9-9
-    private xianlu_oracle listview_xianlu_oracle;
-    private ImageCachceUitl imageCachceUitl;
-    private List<String> urlList = new ArrayList<String>();
-    private ListView listView;
-    private Handler handler1 = new Handler() {
-        public void handleMessage(android.os.Message msg) {
-            switch (msg.what) {
-                case ImageCachceUitl.SUCCSEE:
-                    Bitmap bitmap = (Bitmap) msg.obj;
-                    int psition = msg.arg1;
-                    //通过TAg加载当前的limageview
-                    ImageView imageView = (ImageView) listView.findViewWithTag(psition);
-                    if (null != bitmap && null != imageView) {
-                        imageView.setImageBitmap(bitmap);
-                    }
-                    break;
-                case ImageCachceUitl.FAIL:
-                    Toast.makeText(getApplicationContext(), "下载错误", Toast.LENGTH_LONG).show();
-                default:
-                    break;
-            }
-        }        ;
-    };
     private ExecutorService executorService;
-////////////////////////////9-9
-
     private TextView txt_xianlu_home;
     private TextView txt_xianlu_back;
     private String xianluname_str;
@@ -85,7 +60,8 @@ public class xianlu_main_activity extends Activity {
     };
     private int MIN_MARK = 1;
     private int MAX_MARK = 6;
-
+    private ListView listview;
+    static ArrayList<ItemEntity> itemEntities;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -93,11 +69,7 @@ public class xianlu_main_activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.xianlu_main);
 
-        listView = (ListView) findViewById(R.id.xianlu_main_xianlu_listview);
-
-        imageCachceUitl = new ImageCachceUitl(getApplicationContext(), handler1);
-
-
+        listview = (ListView) findViewById(R.id.xianlu_main_xianlu_listview);
 
         executorService = Executors.newFixedThreadPool(5);
         listview_download();
@@ -123,30 +95,59 @@ public class xianlu_main_activity extends Activity {
 
     private void listview_download() {
         executorService.submit(new Runnable() {
+
             @Override
             public void run() {
-
-//                listview_xianlu_oracle.getImageromSdk();
-
-//                listview_xianlu_oracle.getList_result().size();
-
-                for (int i = 0; i < listview_xianlu_oracle.getList_result().size(); i++) {
-
-                    urlList.add(Data_up.getSERVICE_URL_IP_PORT_webnnn()+listview_xianlu_oracle.getList_result().get(i).toString()+".jpg");
-                }
-
+                xianlu_oracle.getImageromSdk();
                 try {
                     mainHandler.post(new Runnable() {
                         @Override
                         public void run() {
-                            listView.setAdapter(new myListAdapt());
-                            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+                            itemEntities = new ArrayList<ItemEntity>();
+
+                            final String [] xianlu_name = new String[xianlu_oracle.getList_result().size()];
+
+                            final String [] xianlu_num = new String[xianlu_oracle.getList_result().size()];
+
+                            final ItemEntity [] entity_oracle = new ItemEntity[xianlu_oracle.getList_result().size()];
+
+                            for (int i=0;i<xianlu_name.length;i++)
+                            {
+                                xianlu_name[i] = xianlu_oracle.getList_result().get(i);
+
+                                xianlu_num[i] = xianlu_oracle.getList_result().get(i);
+
+                                entity_oracle[i] = new ItemEntity(Data_up.getSERVICE_URL_IP_PORT_webnnn()+xianlu_name[i]+".jpg","名称："+xianlu_name[i],"数量："+xianlu_num[i],null);
+
+                                itemEntities.add(entity_oracle[i]);
+                            }
+                            listview.setAdapter(new ListItemAdapter(xianlu_main_activity.this, itemEntities));
+                            // 1.无图片
+//                ItemEntity entity1 = new ItemEntity(//
+//                        "http://img.my.csdn.net/uploads/201410/19/1413698871_3655.jpg", "张三", "今天天气不错...", null);
+//                itemEntities.add(entity1);
+//
+//                ItemEntity entity2 = new ItemEntity(//
+//                        "http://img.my.csdn.net/uploads/201410/19/1413698865_3560.jpg", "李四", "今天雾霾呢...", null);
+//                itemEntities.add(entity2);
+//
+//                ItemEntity entity3 = new ItemEntity(//
+//                        "http://img.my.csdn.net/uploads/201410/19/1413698837_5654.jpg", "王五", "今天好大的太阳...", null);
+//                itemEntities.add(entity3);
+//
+//                ItemEntity entity4 = new ItemEntity(//
+//                        "http://img.my.csdn.net/uploads/201410/19/1413698883_5877.jpg", "赵六", "今天下雨了...", null);
+//                itemEntities.add(entity4);
+                            //                            listView.setAdapter(new myListAdapt());
+//                         listview 点击事件
+                            listview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                                 @Override
                                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                                    xianluname_str = urlList.get(position).toString();
 
                                     LayoutInflater inflater = (LayoutInflater) getApplicationContext().getSystemService(LAYOUT_INFLATER_SERVICE);
+
                                     view = inflater.inflate(R.layout.xianlupopup, null);
 
                                     final TextView pop_chehao = (EditText) view.findViewById(R.id.pop_chehao);
@@ -202,7 +203,8 @@ public class xianlu_main_activity extends Activity {
                                         }
                                     });
 
-                                    ad.setTitle("检查信息");
+                                    xianluname_str = xianlu_name[position];
+                                    ad.setTitle("待检查线路："+xianluname_str);
                                     selfdialog = ad.create();
                                     selfdialog.setButton("确定", new DialogInterface.OnClickListener() {
                                         @Override
@@ -248,6 +250,7 @@ public class xianlu_main_activity extends Activity {
             }
         });
     }
+
     private void showDialog() {
         AlertDialog dialog;
         AlertDialog.Builder builder = new AlertDialog.Builder(xianlu_main_activity.this);
@@ -261,47 +264,5 @@ public class xianlu_main_activity extends Activity {
         });
         dialog = builder.create();
         dialog.show();
-    }
-
-    class myListAdapt extends BaseAdapter {
-        private LayoutInflater layoutInflater;
-        ImageView list_imag;
-        Button list_but;
-        TextView xianlu_my_image_item_textview;
-        @Override
-        public int getCount() {
-            // TODO Auto-generated method stub
-            return urlList.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            // TODO Auto-generated method stub
-            return urlList.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            // TODO Auto-generated method stub
-            return position;
-        }
-
-        @SuppressLint({ "InflateParams", "ViewHolder" })
-        @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
-            layoutInflater=LayoutInflater.from(getApplication());
-            convertView = layoutInflater.inflate(R.layout.my_image_view, null);
-            list_imag=(ImageView) convertView.findViewById(R.id.list_imag);
-            xianlu_my_image_item_textview=(TextView) convertView.findViewById(R.id.xianlu_my_image_item_textview);
-            list_imag.setTag(position);
-            final Bitmap bitmap=imageCachceUitl.getBitmapFromUrl(urlList.get(position), position);
-            if (null!=bitmap) {
-                list_imag.setImageBitmap(bitmap);
-            }
-
-            list_imag.setVisibility(View.VISIBLE);
-            xianlu_my_image_item_textview.setText(urlList.get(position).toString());
-            return convertView;
-        }
     }
 }

@@ -222,13 +222,13 @@ public class crm_main_activity extends Activity {
         //绑定适配器和值
         SpinnerAdapter provinceAdapter=new SpinnerAdapter(crm_main_activity.this,android.R.layout.simple_spinner_item,mainActivity_login.gongwei);
         provinceSpinner.setAdapter(provinceAdapter);
-        provinceSpinner.setSelection(4,true);  //设置默认选中项，此处为默认选中第4个值
+        provinceSpinner.setSelection(0,true);  //设置默认选中项，此处为默认选中第4个值
 
-        SpinnerAdapter cityAdapter=new SpinnerAdapter(crm_main_activity.this,android.R.layout.simple_spinner_item,mainActivity_login.gongxu[4]);
+        SpinnerAdapter cityAdapter=new SpinnerAdapter(crm_main_activity.this,android.R.layout.simple_spinner_item,mainActivity_login.gongxu[0]);
         citySpinner.setAdapter(cityAdapter);
         citySpinner.setSelection(0,true);  //默认选中第0个
 
-        final SpinnerAdapter countyAdapter=new SpinnerAdapter(crm_main_activity.this,android.R.layout.simple_spinner_item,mainActivity_login.xiangdian[4][1]);
+        final SpinnerAdapter countyAdapter=new SpinnerAdapter(crm_main_activity.this,android.R.layout.simple_spinner_item,mainActivity_login.xiangdian[0][0]);
         countySpinner.setAdapter(countyAdapter);
         countySpinner.setSelection(0, true);
 

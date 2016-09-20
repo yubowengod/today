@@ -31,4 +31,10 @@ public class Data_up {
         return SERVICE_NAMESPACE;
     }
 
+    private static String SERVICE_URL_IP_PORT_local_file = "http://192.168.155.1:8011/local_file/";
+
+    public static String getSERVICE_URL_IP_PORT_local_file() {
+        return SERVICE_URL_IP_PORT_local_file;
+    }
+
 }
